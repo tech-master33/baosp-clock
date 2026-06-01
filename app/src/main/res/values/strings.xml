@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">BAOSP Clock</string>
+    <string name="tab_alarm">Alarm</string>
+    <string name="tab_timer">Timer</string>
+    <string name="tab_stopwatch">Stopwatch</string>
+    <string name="set_alarm">Set Alarm</string>
+    <string name="alarm_hour">Hour</string>
+    <string name="alarm_minute">Minute</string>
+    <string name="alarm_set">Alarm set for %d:%02d</string>
+    <string name="alarm_off">Alarm off</string>
+    <string name="alarm_ringing">Alarm ringing</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="start_timer">Start Timer</string>
+    <string name="stop_timer">Stop</string>
+    <string name="reset_timer">Reset</string>
+    <string name="timer_hours">Hours</string>
+    <string name="timer_minutes">Minutes</string>
+    <string name="timer_seconds">Seconds</string>
+    <string name="timer_done">Timer finished</string>
+    <string name="start_stopwatch">Start</string>
+    <string name="stop_stopwatch">Stop</string>
+    <string name="lap">Lap</string>
+    <string name="reset_stopwatch">Reset</string>
+    <string name="current_time">Current time: %s</string>
+    <string name="alarm_label">BAOSP Clock Alarm</string>
+</resources>
