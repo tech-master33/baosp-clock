@@ -1,0 +1,85 @@
+name: Android CI — baosp-clock
+
+on:
+  push:
+    branches: [ "master", "main" ]
+  pull_request:
+    branches: [ "master", "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build baosp-clock APK
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout latest code
+        uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 0
+
+      - name: Print commit being built
+        run: git log -1 --format="%H  %s  (%ci)"
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Grant Gradle execute permission
+        run: chmod +x gradlew
+
+      - name: Build debug APK
+        run: ./gradlew clean assembleDebug --no-daemon --stacktrace
+
+      - name: Build release APK
+        run: ./gradlew assembleRelease --no-daemon --stacktrace || echo "Release skipped (needs signing config)"
+
+      - name: Locate APKs
+        run: find app/build/outputs/apk -name "*.apk" -exec ls -lh {} \;
+
+      - name: Upload debug APK as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: baosp-clock-debug
+          path: app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 30
+          if-no-files-found: error
+
+      - name: Upload release APK as artifact (if built)
+        uses: actions/upload-artifact@v4
+        with:
+          name: baosp-clock-release
+          path: app/build/outputs/apk/release/
+          retention-days: 30
+          if-no-files-found: ignore
+
+      - name: Create GitHub Release with APK
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main')
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: "build-${{ github.run_number }}-${{ github.sha }}"
+          name: "baosp-clock build ${{ github.run_number }}"
+          body: |
+            Automated build from commit ${{ github.sha }}
+
+            **Commit message:** ${{ github.event.head_commit.message }}
+
+            ## How to install
+            1. Download `app-debug.apk` below
+            2. Transfer it to your Android device
+            3. Install it (allow unknown sources if prompted)
+            4. Open **BAOSP Clock** from your app drawer
+          prerelease: true
+          files: |
+            app/build/outputs/apk/debug/app-debug.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
